@@ -1,130 +1,71 @@
-import socket
+import socket, random
 import sys
+
+def isWordGuessed(secretWord, lettersGuessed):
+  for i  in secretWord:
+    if i not in lettersGuessed:
+      return False
+  return True
+
+def getGuessedWord(secretWord, lettersGuessed):
+  r=""
+  for i in secretWord:
+    if i in lettersGuessed:
+      r = r + i
+    else:
+      r = r + "_ "
+  return r
+
+def getAvailableLetters(lettersGuessed):
+
+  new = ""
+  strr="abcdefghijklkmnopqrstuvwxyz"
+  for i in strr:
+    if i not in lettersGuessed:
+      new = new + i
+  return new
+
+def hangman(s):
+  print("Welcome to the game, Hangman!")
+  print(f"I am thinking of a word that is {len(secretWord)} letters long")
+  print("-"*10)
+  guesses = 6
+  lettersGuessed = []
+  neww=[]
+  while guesses > 0:
+    print(f"You have {guesses} guesses left")
+    print("Available letters:", getAvailableLetters(lettersGuessed))
+    lg=serversocket.recv(bytes(buf)).encode()
+    lg=lg.lower()
+    sc="~!@#$%^&*()_+=~{}[]:;\"\'<,>.?/|\'1234567890\\"
+    if lg not in sc:
+        if lg in secretWord and lg not in lettersGuessed:
+          neww.append(lg)
+          print("Good Guess:", getGuessedWord(secretWord, neww)) 
+          print("-"*10)
+        elif lg not in secretWord and lg not in lettersGuessed:
+          guesses -= 1
+          print("Oops! That letter is not in my word:", getGuessedWord(secretWord, lettersGuessed))
+          print("-"*10)
+        elif lg in lettersGuessed:  
+          print("Oops! You've already guessed that letter:", getGuessedWord(secretWord, lettersGuessed))
+          print("-"*10)
+        if isWordGuessed(secretWord, neww): 
+          print("Congratulations, you won!")
+          break
+        lettersGuessed.append(lg)
+    else:
+      print("Enter a valid input")
+    if guesses == 0:
+        print("Sorry, you ran out of guesses")
+        print("SecretWord is " + secretWord)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind(('localhost', 8089))
-serversocket.listen(1) # become a server socket, maximum 5 connections
-
+serversocket.listen(8) # become a server socket, maximum 5 connections		
 while True:
    connection, address = serversocket.accept()
    buf = connection.recv(64)
-   print(str(buf, "utf-8"))
-   word = str(buf, "utf-8")
-   break
-
-print(word)
-
-HANGMANPICS = ['''
-+-----+
-|     |
-|
-|
-|
-|
-======= ''','''
-+-----+
-|     |
-|     0
-|
-|
-|
-======= ''','''
-+-----+
-|     |
-|     0
-|     |
-|
-|
-======= ''','''
-+-----+
-|     |
-|     0
-|    /|
-|
-|
-======= ''','''
-+-----+
-|     |
-|     0
-|    /|\ 
-|
-|
-======= ''','''
-+-----+
-|     |
-|     0
-|    /|\ 
-|    / 
-|
-======= ''','''
-+-----+
-|     |
-|     0
-|    /|\ 
-|    / \ 
-|
-======= ''' ]
-
-def displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord):
-	print(HANGMANPICS[len(missedLetters)])
-	print()
-	
-	print('Missed letters:', end=' ')
-	for letter in missedLetters:
-		print(letter, end=' ')
-	print()
-	
-	blanks = '_' * len(secretWord)
-	
-	for i in range(len(secretWord)): # replace blanks with correctly guessed letters
-		if secretWord[i] in correctLetters:
-			blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
-	
-	for letter in blanks: # show the secret word with spaces in between each letter
-		print(letter, end=' ')
-	print()
-	
-def getGuess(alreadyGuessed):
-	while True:
-		print('Guess a letter.')
-		guess = input()
-		guess = guess.lower()
-		if len(guess) != 1:
-			print('Please enter a single letter.')
-		elif guess in alreadyGuessed:
-			print('You have already guessed that letter. Choose again.')
-		elif guess not in 'abcdefghijklmnopqrstuvwxyz':
-			print('Please enter a LETTER.')
-		else:
-			return guess
-			
-print('H A N G M A N')
-missedLetters = ''
-correctLetters = ''
-secretWord = word
-gameIsDone = False
-
-while True:
-	displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
-	guess = getGuess(missedLetters + correctLetters)
-	
-	if guess in secretWord:
-		correctLetters = correctLetters + guess
-		foundAllLetters = True
-		
-		for i in range(len(secretWord)):
-			if secretWord[i] not in correctLetters:
-				foundAllLetters = False
-				break
-		if foundAllLetters:
-			print('Yes! The secret word is "' + secretWord + '"! You have won!')
-			clientsocket.send(bytes('You lost opponent won', 'UTF-8'))
-			gameIsDone = True
-			break
-	else:
-		missedLetters = missedLetters + guess
-		if len(missedLetters) == len(HANGMANPICS) - 1:
-			displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
-			print('You have run out of guesses!\nAfter ' + str(len(missedLetters)) + ' missed guesses and ' + str(len(correctLetters)) + ' correct guesses, the word was "' + secretWord + '"')
-			gameIsDone = True
-			break
+   f = open("words.txt").read().split()
+   secretWord=random.choice(f)
+   hangman(secretWord)
