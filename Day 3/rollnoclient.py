@@ -1,11 +1,12 @@
 import socket
 
+host = 'localhost'
+port = 8188
+
 soc = socket.socket()
+soc.connect((host, port))
 print('\n-------MSIT Attendance marking - 2019-------\n')
-# while True:
-print('Enter your rollnumber : ', end = " ")
+print('Enter your rollnumber : ')
 rollnum = input()
-for i in range(8187,8190):
-    soc.connect(('127.0.0.1', i))
-    soc.send(rollnum.encode())
-    soc.close()
+soc.send(rollnum.encode())
+soc.close()
