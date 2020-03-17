@@ -8,7 +8,7 @@ for i in range(1, len(roll_list)):
 print(string)
 
 soc = socket.socket()
-soc.bind(('127.0.0.1', 8188))
+soc.bind(('localhost', 8187))
 soc.listen(10)
 while True:
 	conn, addr = soc.accept()
@@ -17,5 +17,5 @@ while True:
 	checkroll = int(rollnum)
 	if checkroll in roll_list:
 		roll_list.remove(checkroll)
-		print("Absentees:"+roll_list)
+		print(roll_list)
 soc.close()
