@@ -79,7 +79,6 @@ def hangman(secretWord, player_name, connection) :
     
     if guesses == 0 :
         score = 0
-        player_name.score += score
         lostGame = "You lost the game. Try again!" + "\nThe secret word is: " + str(secretWord) + "\nYour score: " + str(score) + "\n"
         connection.send(lostGame.encode())
         connection.close()
@@ -95,9 +94,9 @@ class Hangman_Users :
     def leaderBoard(self) :
         return '{},{}'.format(str(self.user).ljust(15), str(self.score))
 
-def th(s) :
+def user(s) :
     conn, address = s.accept()
-    user_existing = conn.send("New user? or Existing user?".encode())
+    user_existing = conn.send("New user or Existing user".encode())
     user_choice = conn.recv(1024).decode()
     if (user_choice == "new") :
         conn.send("Enter your user name: ".encode())
@@ -105,7 +104,7 @@ def th(s) :
         user_names.append(user_name)
         f = open("words.txt").read().split()
         secretWord = random.choice(f)
-        print(secretWord)
+        # print(secretWord)
         user = Hangman_Users(user_name, 0, secretWord)
         users.append(user)
         hangman(secretWord, user, conn)
@@ -129,14 +128,14 @@ def main() :
     s.bind(('localhost', 8089))
     s.listen()
     n = 1000
-    th_user = list()
+    users = list()
     for i in range(n) :
-        t1 = threading.Thread(target = th, args = (s,))
-        th_user.append(t1)
-        th_user[i].start()
+        t1 = threading.Thread(target = user, args = (s,))
+        users.append(t1)
+        users[i].start()
 
     for i in range(n) :
-        th_user[i].join()
+        users[i].join()
 
     print("Done")
 
