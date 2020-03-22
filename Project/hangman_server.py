@@ -74,15 +74,14 @@ def hangman(secretWord, player_name, connection) :
             avail_letters = getAvailableLetters(lettersGuessed)
             guesses -= 1
             wrongGuess = "Wrong guess. " + word + "\nYou have remaining guesses: " + str(guesses) + "\nAvailable letters: " + avail_letters
+            if guesses == 0 :
+                score = 0
+                lostGame = "You lost the game. Try again!" + "\nThe secret word is: " + str(secretWord) + "\nYour score: " + str(score) + "\n"
+                connection.send(lostGame.encode())
+                connection.close()
             connection.send(wrongGuess.encode())
             continue
-    
-    if guesses == 0 :
-        score = 0
-        lostGame = "You lost the game. Try again!" + "\nThe secret word is: " + str(secretWord) + "\nYour score: " + str(score) + "\n"
-        connection.send(lostGame.encode())
-        connection.close()
-
+        
 class Hangman_Users :
 
     words = list()
