@@ -1,13 +1,9 @@
 import socket
 
-# clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# clientsocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-# clientsocket.connect(('localhost', 8089))
 def main() :
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.connect(('localhost', 8089))
+    s.connect(('localhost', 8189))
     print(s.recv(1024).decode())
     choice = input("Enter your choice: ")
     s.send(choice.encode())
