@@ -32,22 +32,22 @@ def hangman(secretWord, player_name, connection) :
     guesses = 8
     wrongGuess_count = 0
     lettersGuessed = []
-    wel = "Welcome to the game, Hangman!" + str(player_name.user) + "\nI am thinking of a word that is " + str(l) + "letters long" + "\nYou have guesses " + str(guesses) + " left"
-    connection.send(wel.encode())
+    welcomeMessage = "Welcome to the game, Hangman!" + str(player_name.user) + "\nI am thinking of a word that is " + str(l) + "letters long" + "\nYou have guesses " + str(guesses) + " left"
+    connection.send(welcomeMessage.encode())
     
     while guesses != 0 :
         user_guess = connection.recv(1024).decode()
         if user_guess in lettersGuessed :
             avail_letters = getAvailableLetters(lettersGuessed)
-            ag = "Already guessed " + str(user_guess) + ".\nTry another letter" + ".\nYou have " + str(guesses) + " remaining." + "\n Available letters: " + avail_letters
-            connection.send(ag.encode())
+            alreadyGuessed = "Already guessed " + str(user_guess) + ".\nTry another letter" + ".\nYou have " + str(guesses) + " remaining." + "\nAvailable letters: " + avail_letters
+            connection.send(alreadyGuessed.encode())
             continue
 
         if user_guess in secretWord :
             lettersGuessed.append(user_guess)
             word = getGuessedWord(secretWord, lettersGuessed)
             avail_letters = getAvailableLetters(lettersGuessed)
-            cg = "Correct guess\n" + word + " is guessed till now. " + "\nYou have " + str(guesses) + " remaining. " + "\n Available letters: " + avail_letters
+            correctGuess = "Correct guess\n" + word + " is guessed till now. " + "\nYou have " + str(guesses) + " remaining. " + "\nAvailable letters: " + avail_letters
             isFound = isWordGuessed(secretWord, lettersGuessed)
             if isFound == True :
                 N = len(secretWord)
@@ -59,18 +59,18 @@ def hangman(secretWord, player_name, connection) :
                     if u == player_name :
                         u.score = player_name.score
                 sorted_users = sorted(users)
-                lb = list()
+                leaderboard = list()
                 print("Users are:")
                 print(user_names)
-                lb.append("Player Name".ljust(15) + "Score")
+                leaderboard.append("Player Name".ljust(15) + "Score")
                 for i in sorted_users :
-                    lb.append(i.leaderBoard())
-                ld = "\n".join(lb)
-                gc = "You guessed the word correctly: " + str(secretWord) + "\nYou have remaining guesses: " + str(guesses) + "\nYour score: " + str(score) + "\n" + ld
-                connection.send(gc.encode())
+                    leaderboard.append(i.leaderBoard())
+                ld = "\n".join(leaderboard)
+                guessedCorrect = "You guessed the word correctly: " + str(secretWord) + "\nYou have remaining guesses: " + str(guesses) + "\nYour score: " + str(score) + "\n" + ld
+                connection.send(guessedCorrect.encode())
                 connection.close()
                 break
-            connection.send(cg.encode())
+            connection.send(correctGuess.encode())
             continue
 
         else :
@@ -78,23 +78,21 @@ def hangman(secretWord, player_name, connection) :
             lettersGuessed.append(user_guess)
             word = getGuessedWord(secretWord, lettersGuessed)
             guesses -= 1
-            wg = "Wrong guess. " + "\nYou have remaining guesses: " + str(guesses) 
-            connection.send(wg.encode())
             if guesses == 0 :
-                break
+                score = 0
+                player_name.score += score
+                leaderboard = list()
+                leaderboard.append("Player Name".ljust(15) + "Score")
+                for i in users :
+                    leaderboard.append(i.leaderBoard())
+                    ld = "\n".join(leaderboard)
+                lostGame = "You lost the game. Try again!" + "\nThe secret word is: " + str(secretWord) + "\nYour score: " + str(score) + "\n" + ld
+                connection.send(lostGame.encode())
+                connection.close()
+                break;
+            wrongGuess = "Wrong guess. " + word + "\nYou have remaining guesses: " + str(guesses) + "\nAvailable letters: " + getAvailableLetters(lettersGuessed)
+            connection.send(wrongGuess.encode())
             continue
-    
-    if guesses == 0 :
-        score = 0
-        player_name.score += score
-        lb = list()
-        lb.append("Player Name".ljust(15) + "Score")
-        for i in users :
-            lb.append(i.leaderBoard())
-            ld = "\n".join(lb)
-        lg = "You lost the game. Try again!" + "\nThe secret word is: " + str(secretWord) + "\nYour score: " + str(score) + "\n" + ld
-        connection.send(lg.encode())
-        connection.close()
 
 class Hangman_Users :
 
